@@ -2,7 +2,7 @@ from http import get_api_data
 
 BASE_RATE_URL = 'https://api.frankfurter.dev/v2/rate'
 
-def get_rate(currency: str = 'USD') -> float:
+def get_rate(currency: str) -> float:
     url = f'BASE_RATE_URL/{currency}/RUB'
     data = get_api_data(url)
     validate_rate(data)
