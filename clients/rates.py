@@ -1,4 +1,5 @@
 from clients.http import get_api_data
+from exceptions import CurrencyNotFoundError
 
 BASE_RATE_URL = "https://api.frankfurter.dev/v2/rate"
 
@@ -11,6 +12,9 @@ def get_rate(currency: str) -> float:
 
 
 def validate_rate(data: dict) -> None:
+    if data.get('status') == 404 or 'rate' not in data:
+        raise CurrencyNotFoundError('Код валюты не найден.')
+
     for field in ("date", "base", "quote", "rate"):
         if field not in data:
             raise ValueError(f"Отсутствует поле {field}")

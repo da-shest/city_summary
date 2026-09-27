@@ -1,28 +1,52 @@
 import argparse
 import json
+import logging
+import sys
 
+from exceptions import NotFoundError, ServiceUnavailableError
 from processing.service import build_city_summary
 
-parser = argparse.ArgumentParser(
-    description="Скрипт для получения погоды и курса валют"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
 )
-parser.add_argument("--city", type=str, required=True, help="Город для прогноза погоды")
-parser.add_argument("--currency", type=str, default="USD", help="Код валюты")
-parser.add_argument("--json", action="store_true", help="Вывод в формате JSON")
-args = parser.parse_args()
+logger = logging.getLogger(__name__)
 
-city_summary = build_city_summary(args.city, args.currency)
-if args.json:
-    print(json.dumps(city_summary))
-else:
-    print(f"Город: {city_summary['city']}")
-    print(
-        f"Погода: {city_summary['weather']['temp_c']}°C, {city_summary['weather']['description']}"
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Скрипт для получения погоды и курса валют"
     )
-    clothes_flag_rus = "да" if city_summary["weather"]["warm_clothes"] else "нет"
-    print(f"Тёплая одежда: {clothes_flag_rus}")
-    print(
-        f"{city_summary['rates']['currency']}→RUB: {city_summary['rates']['rate_to_rub']}"
-    )
-    expensive_flag_rus = "да" if city_summary["rates"]["expensive"] else "нет"
-    print(f"Дорогой курс: {expensive_flag_rus}")
+    parser.add_argument("--city", type=str, required=True, help="Город для прогноза погоды")
+    parser.add_argument("--currency", type=str, default="USD", help="Код валюты")
+    parser.add_argument("--json", action="store_true", help="Вывод в формате JSON")
+    args = parser.parse_args()
+
+    try:
+
+        city_summary = build_city_summary(args.city, args.currency)
+        if args.json:
+            print(json.dumps(city_summary))
+        else:
+            print(f"Город: {city_summary['city']}")
+            print(
+                f"Погода: {city_summary['weather']['temp_c']}°C, {city_summary['weather']['description']}"
+            )
+            clothes_flag_rus = "да" if city_summary["weather"]["warm_clothes"] else "нет"
+            print(f"Тёплая одежда: {clothes_flag_rus}")
+            print(
+                f"{city_summary['rates']['currency']}→RUB: {city_summary['rates']['rate_to_rub']}"
+            )
+            expensive_flag_rus = "да" if city_summary["rates"]["expensive"] else "нет"
+            print(f"Дорогой курс: {expensive_flag_rus}")
+        sys.exit(0)
+
+    except NotFoundError as err:
+        logger.error(f"Данные не найдены: {err}")
+        sys.exit(3)
+
+    except ServiceUnavailableError as err:
+        logger.error(f"Сервис недоступен: {err}")
+        sys.exit(4)
+
+if __name__ == '__main__':
+    main()

@@ -1,4 +1,5 @@
 from clients.http import get_api_data
+from exceptions import CityNotFoundError
 
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
@@ -97,8 +98,8 @@ def get_city_coordinates(city: str) -> dict[str, float]:
 
 
 def validate_coordinates(data: dict) -> None:
-    if "results" not in data:
-        raise ValueError("Отсутствует результат")
+    if "results" not in data or not data['results']:
+        raise CityNotFoundError("Город не найден")
 
     for result in data["results"]:
         for field in ("id", "name", "latitude", "longitude"):
