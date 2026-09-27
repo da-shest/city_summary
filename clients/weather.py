@@ -1,42 +1,43 @@
-from http import get_api_data
+from clients.http import get_api_data
 
-BASE_WEATHER_URL = 'https://geocoding-api.open-meteo.com/v1'
+GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
+FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 
 WEATHER_CODES = {
-	"0": "Clear sky",
-	"1": "Mainly clear",
-	"2": "Partly cloudy",
-	"3": "Overcast",
-	"45": "Fog",
-	"48": "Depositing rime fog",
-	"51": "Light drizzle",
-	"53": "Moderate drizzle",
-	"55": "Dense drizzle",
-	"56": "Light freezing drizzle",
-	"57": "Dense freezing drizzle",
-	"61": "Slight rain",
-	"63": "Moderate rain",
-	"65": "Heavy rain",
-	"66": "Light freezing rain",
-	"67": "Heavy freezing rain",
-	"71": "Slight snowfall",
-	"73": "Moderate snowfall",
-	"75": "Heavy snowfall",
-	"77": "Snow grains",
-	"80": "Slight rain showers",
-	"81": "Moderate rain showers",
-	"82": "Violent rain showers",
-	"85": "Slight snow showers",
-	"86": "Heavy snow showers",
-	"95": "Thunderstorm",
-	"96": "Thunderstorm with slight hail",
-	"97": "Heavy thunderstorm",
-	"99": "Thunderstorm with heavy hail"
+	0: "Clear sky",
+	1: "Mainly clear",
+	2: "Partly cloudy",
+	3: "Overcast",
+	45: "Fog",
+	48: "Depositing rime fog",
+	51: "Light drizzle",
+	53: "Moderate drizzle",
+	55: "Dense drizzle",
+	56: "Light freezing drizzle",
+	57: "Dense freezing drizzle",
+	61: "Slight rain",
+	63: "Moderate rain",
+	65: "Heavy rain",
+	66: "Light freezing rain",
+	67: "Heavy freezing rain",
+	71: "Slight snowfall",
+	73: "Moderate snowfall",
+	75: "Heavy snowfall",
+	77: "Snow grains",
+	80: "Slight rain showers",
+	81: "Moderate rain showers",
+	82: "Violent rain showers",
+	85: "Slight snow showers",
+	86: "Heavy snow showers",
+	95: "Thunderstorm",
+	96: "Thunderstorm with slight hail",
+	97: "Heavy thunderstorm",
+	99: "Thunderstorm with heavy hail"
 }
 
 def get_weather(city: str) -> dict:
     city_coordinates = get_city_coordinates(city)
-    url = f'{BASE_WEATHER_URL}/forecast'
+    url = FORECAST_URL
     params={
             'latitude': city_coordinates['latitude'],
             'longitude': city_coordinates['longitude'],
@@ -77,7 +78,7 @@ def validate_weather(data: dict) -> None:
 
 
 def get_city_coordinates(city: str) -> dict[str, float]:
-    url = f'{BASE_WEATHER_URL}/search'
+    url = GEOCODING_URL
     params={
             'name': city,
             'count': 1,
@@ -111,3 +112,7 @@ def validate_coordinates(data: dict) -> None:
         ):
             if not isinstance(result[field], type):
                 raise TypeError(f'Поле {field} должно иметь тип {type}')
+
+if __name__ == '__main__':
+    print(get_weather('Berlin'))
+    # print(get_city_coordinates('Berlin'))

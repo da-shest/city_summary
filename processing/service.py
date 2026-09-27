@@ -1,6 +1,6 @@
 from clients.weather import get_weather
 from clients.rates import get_rate
-from preprocessing import is_rate_expensive, is_warm_clothes_needed
+from processing.preprocessing import is_rate_expensive, is_warm_clothes_needed
 
 def build_city_summary(city: str, currency: str = "USD") -> dict[str, any]:
     weather = get_weather(city)
